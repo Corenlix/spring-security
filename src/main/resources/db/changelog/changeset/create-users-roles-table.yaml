@@ -1,0 +1,24 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-users-roles-table
+      author: corenlix
+      changes:
+        - createTable:
+            tableName: users_roles
+            columns:
+              - column:
+                  name: user_id
+                  type: int
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: id
+                    foreignKeyName: id
+                    referencedTableName: users
+              - column:
+                  name: role_id
+                  type: int
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: id
+                    foreignKeyName: id
+                    referencedTableName: roles

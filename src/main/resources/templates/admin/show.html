@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <th:block th:include="fragments::head"></th:block>
+  <meta charset="UTF-8">
+  <title>User</title>
+</head>
+<body>
+<div th:replace="fragments::header"></div>
+<p>Name: <span th:text="${user.name}">VALUE</span></p>
+<p>Password: <span th:text="${user.password}">VALUE</span></p>
+<p>Id: <span th:text="${user.id}">VALUE</span></p>
+<p>Roles: <span th:text="${user.roles}">VALUE</span></p>
+</body>
+</html>

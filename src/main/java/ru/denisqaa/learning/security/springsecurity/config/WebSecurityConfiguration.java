@@ -1,50 +1,55 @@
 package ru.denisqaa.learning.security.springsecurity.config;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import ru.denisqaa.learning.security.springsecurity.service.UserService;
 
+@RequiredArgsConstructor
 @Configuration
 @EnableWebSecurity //TODO Помечен как Deprecated, переделать под Spring 2.7.0
-public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfiguration {
   private final SuccessUserLoginHandler successUserLoginHandler;
+  private final UserService userService;
+  private final PasswordEncoder passwordEncoder;
 
-  public WebSecurityConfiguration(
-      SuccessUserLoginHandler successUserHandler) {
-    this.successUserLoginHandler = successUserHandler;
-  }
 
-  @Override
-  protected void configure(HttpSecurity http) throws Exception {
-    http
+  @Bean
+  protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    http  
         .authorizeRequests()
+        .antMatchers("/admin/**").hasRole("ADMIN")
+        .antMatchers("/user").hasAnyRole("ADMIN", "USER")
         .antMatchers("/", "/index").permitAll()
         .anyRequest().authenticated()
         .and()
-        .formLogin().successHandler(successUserLoginHandler)
-        .permitAll()
+          .formLogin().successHandler(successUserLoginHandler)
+          .permitAll()
         .and()
-        .logout()
-        .permitAll();
+          .logout()
+          .permitAll()
+        .and()
+          .csrf()
+          .disable();
+    return http.build();
   }
 
-  // TODO на текущий момент In-Memory аутентификация, нужно сделать чтобы все подтяигвалос с базы, + пароли никак не шифруется, добавить Bcrypt
   @Bean
-  @Override
   public UserDetailsService userDetailsService() {
-    UserDetails user =
-        User.withDefaultPasswordEncoder() //TODO Deprecated, сделать конфиг на новом спринге
-            .username("user")
-            .password("user")
-            .roles("USER")
-            .build();
+    return userService;
+  }
 
-    return new InMemoryUserDetailsManager(user);
+  @Bean
+  public DaoAuthenticationProvider daoAuthenticationProvider() {
+    DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+    authenticationProvider.setPasswordEncoder(passwordEncoder);
+    authenticationProvider.setUserDetailsService(userService);
+    return authenticationProvider;
   }
 }
