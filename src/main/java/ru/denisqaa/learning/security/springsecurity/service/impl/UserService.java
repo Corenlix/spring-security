@@ -5,7 +5,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import ru.denisqaa.learning.security.springsecurity.dao.UserDao;
 import ru.denisqaa.learning.security.springsecurity.dto.UserDTO;
 import ru.denisqaa.learning.security.springsecurity.mappers.UserMapper;
 import ru.denisqaa.learning.security.springsecurity.model.User;
